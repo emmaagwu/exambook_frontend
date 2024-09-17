@@ -1,6 +1,5 @@
-// src/components/LoginForm.js
 import React, { useState } from 'react';
-import { loginUser } from '../services/authService';
+import { loginUser } from '../services/authService'; // Assuming authService is for API calls
 import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
@@ -14,10 +13,12 @@ const LoginForm = () => {
         try {
             const response = await loginUser({ email, password });
 
-            const { access_token, is_admin } = response;
+            const { access_token, refresh_token, is_admin } = response;
 
-            // Store token for future use
+            // Store both tokens for future use
             localStorage.setItem('access_token', access_token);
+            localStorage.setItem('refresh_token', refresh_token);
+            console.log(access_token, refresh_token);
 
             // Navigate based on admin status
             if (is_admin) {

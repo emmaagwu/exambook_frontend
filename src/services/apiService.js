@@ -1,20 +1,36 @@
 // services/apiService.js
+import { refreshAccessToken } from './authService';
+import { Logout } from './logout';
 
 const API_URL = 'http://localhost:5000';
 
 export const fetchWithAuth = async (url, options = {}) => {
   try {
-    const token = localStorage.getItem('token');
+    let token = localStorage.getItem('token');
     console.log('JWT Token:', token); // Debugging
+
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,  // Attach token to all requests
     };
 
-    const response = await fetch(`${API_URL}${url}`, {
+    let response = await fetch(`${API_URL}${url}`, {
       ...options,
       headers: { ...headers, ...options.headers }, // Merge any custom headers
     });
+
+    // If the request fails with a 401 (Unauthorized), refresh the token
+    if (response.status === 401) {
+      console.log('Access token expired, attempting to refresh...');
+      const newAccessToken = await refreshAccessToken();
+
+      // Retry the original request with the new access token
+      headers['Authorization'] = `Bearer ${newAccessToken}`;
+      response = await fetch(`${API_URL}${url}`, {
+        ...options,
+        headers: { ...headers, ...options.headers },
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`Request failed: ${response.statusText}`);
@@ -23,6 +39,7 @@ export const fetchWithAuth = async (url, options = {}) => {
     return await response.json();
   } catch (error) {
     console.error('Fetch with auth error:', error);
+    Logout(); // Log out the user on error
     throw error;
   }
 };

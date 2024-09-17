@@ -43,3 +43,38 @@ export const loginUser = async (credentials) => {
         throw new Error(error.message);
     }
 };
+
+
+// Function to refresh the access token
+export const refreshAccessToken = async () => {
+    const refresh_token = localStorage.getItem('refresh_token');
+    if (!refresh_token) {
+        throw new Error('No refresh token available');
+    }
+    console.log(refresh_token)
+    try {
+        const response = await fetch(`${API_BASE_URL}/refresh`, {
+            method: 'POST',
+            headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${refresh_token}`,
+            },
+            body: JSON.stringify({ refresh_token }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to refresh token');
+        }
+
+        const data = await response.json();
+        const { access_token } = data;
+
+        // Update the access token in local storage
+        localStorage.setItem('access_token', access_token);
+
+        return access_token;
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        throw error;
+    }
+};

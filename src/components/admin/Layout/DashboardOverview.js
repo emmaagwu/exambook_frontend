@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getExams } from '../../../services/examService';
-// import { getUsers } from '../../../services/userService';
+import { getUsers } from '../../../services/userService';
 import { getQuestions } from '../../../services/questionService';
 // import { getSubmissions } from '../../../services/submissionService';
 // Import icons directly from the package
@@ -9,7 +9,7 @@ import { UserIcon, ClipboardDocumentListIcon, QuestionMarkCircleIcon, CheckCircl
 const DashboardOverview = () => {
   const [loading, setLoading] = useState(true);
   const [examCount, setExamCount] = useState(0);
-  // const [userCount, setUserCount] = useState(0);
+  const [userCount, setUserCount] = useState(0);
   const [questionCount, setQuestionCount] = useState(0);
   // const [submissionCount, setSubmissionCount] = useState(0);
 
@@ -17,12 +17,12 @@ const DashboardOverview = () => {
     const fetchDashboardData = async () => {
       try {
         const exams = await getExams();
-        // const users = await getUsers();
+        const users = await getUsers();
         const questions = await getQuestions();
         // const submissions = await getSubmissions();
 
         setExamCount(exams.length);
-        // setUserCount(users.length);
+        setUserCount(users.length);
         setQuestionCount(questions.length);
         // setSubmissionCount(submissions.length);
 
@@ -58,7 +58,7 @@ const DashboardOverview = () => {
           </div>
         </div>
 
-        {/* Total Users Card
+        {/* Total Users Card */}
         <div className="bg-green-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
           <div className="flex items-center">
             <UserIcon className="h-8 w-8 text-green-500 mr-4" />
@@ -70,7 +70,7 @@ const DashboardOverview = () => {
               </div>
             </div>
           </div>
-        </div> */}
+        </div> 
 
         {/* Total Questions Card */}
         <div className="bg-yellow-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
